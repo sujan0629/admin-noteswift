@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Wand2, Loader2 } from "lucide-react";
-import { handleSuggestTags } from "@/app/actions";
+import { handleSuggestTags, handleCreateNote } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,7 +31,9 @@ const formSchema = z.object({
 
 export function ContentForm() {
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
+  const router = useRouter();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,8 +60,10 @@ export function ContentForm() {
     try {
       const result = await handleSuggestTags({ contentDescription: description });
       if (result.success && result.tags) {
-        setSuggestedTags(result.tags);
-        form.setValue("tags", [...(form.getValues("tags") || []), ...result.tags]);
+        const currentTags = form.getValues("tags") || [];
+        const newTags = result.tags.filter(tag => !currentTags.includes(tag));
+        setSuggestedTags(prev => [...prev, ...newTags]);
+        form.setValue("tags", [...currentTags, ...newTags]);
       } else {
         toast({
           variant: "destructive",
@@ -77,12 +82,23 @@ export function ContentForm() {
     }
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    toast({
-      title: "Course Created!",
-      description: "The new course has been saved successfully.",
-    });
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    const result = await handleCreateNote(values);
+    if (result.success) {
+      toast({
+        title: "Note Created!",
+        description: "The new note has been saved successfully.",
+      });
+      router.push("/dashboard/content");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Failed to create note",
+        description: result.error,
+      });
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -95,9 +111,9 @@ export function ContentForm() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course Title</FormLabel>
+                  <FormLabel>Note Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Introduction to Calculus" {...field} />
+                    <Input placeholder="e.g., My Great Note" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,10 +124,10 @@ export function ContentForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course Description</FormLabel>
+                  <FormLabel>Note Content</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the course content, learning objectives, and target audience."
+                      placeholder="Write your note here..."
                       className="min-h-[120px]"
                       {...field}
                     />
@@ -124,7 +140,7 @@ export function ContentForm() {
                <div className="flex items-center justify-between">
                 <div>
                   <FormLabel>Content Tags</FormLabel>
-                  <FormDescription>AI can suggest tags based on your description.</FormDescription>
+                  <FormDescription>AI can suggest tags based on your content.</FormDescription>
                 </div>
                  <Button type="button" onClick={onSuggestTags} disabled={isSuggesting} variant="outline">
                    {isSuggesting ? (
@@ -135,9 +151,9 @@ export function ContentForm() {
                    Suggest Tags
                  </Button>
                </div>
-              {suggestedTags.length > 0 && (
+              {form.watch("tags") && form.watch("tags")!.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {suggestedTags.map((tag, index) => (
+                  {form.watch("tags")!.map((tag, index) => (
                     <Badge key={index} variant="secondary">
                       {tag}
                     </Badge>
@@ -147,8 +163,11 @@ export function ContentForm() {
             </div>
             
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost">Cancel</Button>
-              <Button type="submit">Save Course</Button>
+              <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="animate-spin" />}
+                Save Note
+              </Button>
             </div>
           </form>
         </Form>

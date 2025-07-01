@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
+import { format } from "date-fns";
+import clientPromise from "@/lib/mongodb";
 import {
   Table,
   TableHeader,
@@ -19,48 +21,72 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const courses = [
-  { id: 1, title: "Introduction to Algebra", subject: "Mathematics", chapters: 10, status: "Published" },
-  { id: 2, title: "World History: Ancient Civilizations", subject: "History", chapters: 15, status: "Published" },
-  { id: 3, title: "Fundamentals of Physics", subject: "Science", chapters: 12, status: "Draft" },
-  { id: 4, title: "English Literature: The Classics", subject: "Literature", chapters: 8, status: "Published" },
-  { id: 5, title: "Basics of Programming with Python", subject: "Computer Science", chapters: 20, status: "Draft" },
-];
+type Note = {
+  _id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+};
 
-export default function ContentPage() {
+async function getNotes(): Promise<Note[]> {
+  try {
+    const client = await clientPromise;
+    const db = client.db(process.env.DB_NAME);
+    const notes = await db
+      .collection(process.env.COLLECTION_NAME!)
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .toArray();
+    
+    return JSON.parse(JSON.stringify(notes));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+export default async function ContentPage() {
+  const notes = await getNotes();
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold font-headline tracking-tight">Content Management</h1>
         <Button asChild>
-          <Link href="/dashboard/content/new">Add New Course</Link>
+          <Link href="/dashboard/content/new">Add New Note</Link>
         </Button>
       </div>
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle>All Courses</CardTitle>
+          <CardTitle>All Notes</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Course Title</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead className="text-center">Chapters</TableHead>
+                <TableHead>Note Title</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Created At</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {courses.map((course) => (
-                <TableRow key={course.id}>
-                  <TableCell className="font-medium">{course.title}</TableCell>
-                  <TableCell>{course.subject}</TableCell>
-                  <TableCell className="text-center">{course.chapters}</TableCell>
+              {notes.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center h-24">No notes found.</TableCell>
+                </TableRow>
+              )}
+              {notes.map((note) => (
+                <TableRow key={note._id}>
+                  <TableCell className="font-medium">{note.title}</TableCell>
                   <TableCell>
-                    <Badge variant={course.status === "Published" ? "default" : "secondary"}>
-                      {course.status}
+                    <Badge variant={note.status === "Published" ? "default" : "secondary"}>
+                      {note.status || "Draft"}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {note.createdAt ? format(new Date(note.createdAt), "PPP") : 'N/A'}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
