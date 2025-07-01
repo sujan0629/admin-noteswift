@@ -9,13 +9,33 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTrigger,
-  DialogClose
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Upload, Video, ClipboardList, CalendarClock, StickyNote, BookCopy } from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Video,
+  ClipboardList,
+  CalendarClock,
+  StickyNote,
+  BookCopy,
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 const uploadActions = [
   {
@@ -37,7 +57,8 @@ const uploadActions = [
     description: "Question papers",
     icon: BookCopy,
     dialogTitle: "Add Model Question",
-    dialogDescription: "Select a course and year to add a model question paper.",
+    dialogDescription:
+      "Select a course and year to add a model question paper.",
   },
   {
     title: "Add Assignment",
@@ -55,47 +76,122 @@ const uploadActions = [
   },
 ];
 
-export function QuickUploads() {
+type Course = {
+  _id: string;
+  title: string;
+};
+
+export function QuickUploads({ courses }: { courses: Course[] }) {
+  const { toast } = useToast();
+
+  const handleUpload = (title: string) => {
+    toast({
+      title: `${title} Action Successful!`,
+      description: "Your content has been added to the course.",
+    });
+  };
+
   return (
     <Card className="shadow-md">
-        <CardHeader>
-            <CardTitle>Quick Uploads</CardTitle>
-            <CardDescription>Quickly add new content to your courses.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <CardHeader>
+        <CardTitle>Quick Actions</CardTitle>
+        <CardDescription>
+          Quickly add new content to your courses.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {uploadActions.map((action) => (
           <Dialog key={action.title}>
             <DialogTrigger asChild>
-              <button className="w-full text-left p-4 border rounded-lg hover:bg-muted/50 transition-colors flex flex-col items-start gap-2 h-full">
-                  <action.icon className="h-6 w-6 text-primary" />
-                  <p className="font-semibold">{action.title}</p>
-                  <p className="text-sm text-muted-foreground">{action.description}</p>
+              <button
+                className="w-full text-left p-4 border rounded-lg hover:bg-muted/50 transition-colors flex flex-col items-start gap-2 h-full disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={courses.length === 0}
+              >
+                <action.icon className="h-6 w-6 text-primary" />
+                <p className="font-semibold">{action.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  {action.description}
+                </p>
               </button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[480px]">
               <DialogHeader>
                 <DialogTitle>{action.dialogTitle}</DialogTitle>
                 <DialogDescription>{action.dialogDescription}</DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="course" className="text-right">Course</Label>
-                  <Input id="course" placeholder="e.g. Intro to Algebra" className="col-span-3" />
+              {action.title === "Schedule Live Class" ? (
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="course" className="text-right">Course</Label>
+                    <Select>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {courses.map((course) => (
+                          <SelectItem key={course._id} value={course._id}>{course.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="teacher" className="text-right">Teacher</Label>
+                    <Input id="teacher" placeholder="e.g., Prof. Smith" className="col-span-3" />
+                  </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="date" className="text-right">Date</Label>
+                    <Input id="date" type="date" className="col-span-3" />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Time</Label>
+                    <div className="col-span-3 grid grid-cols-2 gap-2">
+                      <Input id="time-from" type="time" aria-label="From time" />
+                      <Input id="time-to" type="time" aria-label="To time" />
+                    </div>
+                  </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="thumbnail" className="text-right">Thumbnail</Label>
+                    <Input id="thumbnail" type="file" className="col-span-3" />
+                  </div>
+                   <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="description" className="text-right">Description</Label>
+                    <Textarea id="description" placeholder="A short description of the class..." className="col-span-3" />
+                  </div>
                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="file" className="text-right">File</Label>
-                  <Input id="file" type="file" className="col-span-3" />
+              ) : (
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="course" className="text-right">Course</Label>
+                    <Select>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {courses.map((course) => (
+                          <SelectItem key={course._id} value={course._id}>{course.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="file" className="text-right">File</Label>
+                    <Input id="file" type="file" className="col-span-3" />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="description" className="text-right">Description</Label>
+                    <Textarea id="description" placeholder="A short description of the content" className="col-span-3" />
+                  </div>
                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="description" className="text-right">Description</Label>
-                   <Textarea id="description" placeholder="A short description" className="col-span-3" />
-                </div>
-              </div>
+              )}
               <DialogFooter>
                 <DialogClose asChild>
-                    <Button variant="ghost">Cancel</Button>
+                  <Button variant="ghost">Cancel</Button>
                 </DialogClose>
-                <Button>Upload</Button>
+                <DialogClose asChild>
+                  <Button onClick={() => handleUpload(action.title)}>
+                    {action.title.includes("Schedule") ? "Schedule" : "Upload"}
+                  </Button>
+                </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>

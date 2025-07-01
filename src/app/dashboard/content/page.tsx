@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MoreHorizontal, PlusCircle, Upload, Video, ClipboardList, CalendarClock } from "lucide-react";
+import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import clientPromise from "@/lib/mongodb";
 import {
@@ -61,7 +61,7 @@ export default async function ContentPage() {
         </Button>
       </div>
 
-      <QuickUploads />
+      <QuickUploads courses={courses} />
 
       <Card className="shadow-md">
         <CardHeader>
@@ -82,7 +82,7 @@ export default async function ContentPage() {
             <TableBody>
               {courses.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center h-24">No courses found.</TableCell>
+                  <TableCell colSpan={5} className="text-center h-24">No courses found. Create one to get started.</TableCell>
                 </TableRow>
               )}
               {courses.map((course) => (
