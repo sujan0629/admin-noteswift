@@ -1,7 +1,7 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, Legend, Line, LineChart } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Users, Activity, BookCheck, Clock } from 'lucide-react';
 
@@ -20,6 +20,26 @@ const courseEnrollmentData = [
     { name: "World History", value: 300, fill: "hsl(var(--chart-2))"  },
     { name: "AP Physics", value: 300, fill: "hsl(var(--chart-3))"  },
     { name: "English Lit", value: 200, fill: "hsl(var(--chart-4))"  },
+    { name: "Chemistry", value: 150, fill: "hsl(var(--chart-5))" },
+];
+
+const weeklyActiveUsersData = [
+  { day: "Mon", users: 120 },
+  { day: "Tue", users: 150 },
+  { day: "Wed", users: 175 },
+  { day: "Thu", users: 130 },
+  { day: "Fri", users: 190 },
+  { day: "Sat", users: 220 },
+  { day: "Sun", users: 210 },
+];
+
+const coursesPublishedData = [
+  { month: "Jan", courses: 5 },
+  { month: "Feb", courses: 8 },
+  { month: "Mar", courses: 6 },
+  { month: "Apr", courses: 10 },
+  { month: "May", courses: 7 },
+  { month: "Jun", courses: 12 },
 ];
 
 
@@ -50,13 +70,14 @@ export default function ReportsPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <Card className="lg:col-span-3 shadow-md">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="shadow-md">
             <CardHeader>
                 <CardTitle>User Growth (Last 6 Months)</CardTitle>
+                <CardDescription>New users signing up each month.</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={{}} className="h-[350px] w-full">
+                <ChartContainer config={{}} className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={userGrowthData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -70,12 +91,13 @@ export default function ReportsPage() {
             </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2 shadow-md">
+        <Card className="shadow-md">
             <CardHeader>
                 <CardTitle>Course Enrollment Breakdown</CardTitle>
+                <CardDescription>Distribution of students across popular courses.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <ChartContainer config={{}} className="h-[350px] w-full">
+            <CardContent className="flex justify-center">
+                <ChartContainer config={{}} className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                         <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
@@ -85,7 +107,7 @@ export default function ReportsPage() {
                             nameKey="name"
                             cx="50%"
                             cy="50%"
-                            outerRadius={120}
+                            outerRadius={100}
                             labelLine={false}
                         >
                             {courseEnrollmentData.map((entry, index) => (
@@ -94,6 +116,46 @@ export default function ReportsPage() {
                         </Pie>
                          <Legend />
                     </PieChart>
+                </ResponsiveContainer>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        
+        <Card className="shadow-md">
+            <CardHeader>
+                <CardTitle>Weekly Active Users</CardTitle>
+                <CardDescription>Daily active users over the last 7 days.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={{}} className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={weeklyActiveUsersData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="day" tickLine={false} axisLine={false} />
+                        <YAxis tickLine={false} axisLine={false} />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Line type="monotone" dataKey="users" stroke="hsl(var(--primary))" strokeWidth={2} />
+                    </LineChart>
+                </ResponsiveContainer>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        <Card className="shadow-md">
+            <CardHeader>
+                <CardTitle>Courses Published (Last 6 Months)</CardTitle>
+                <CardDescription>New courses published each month.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={{}} className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={coursesPublishedData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                        <YAxis tickLine={false} axisLine={false} />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey="courses" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
                 </ResponsiveContainer>
                 </ChartContainer>
             </CardContent>
