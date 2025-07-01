@@ -16,15 +16,16 @@ export async function handleSuggestTags(data: ContentTaggingInput) {
   }
 }
 
-const noteSchema = z.object({
+const courseSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long."),
   description: z.string().min(10, "Description must be at least 10 characters long."),
+  subject: z.string().min(2, "Subject must be at least 2 characters long."),
   tags: z.array(z.string()).optional(),
 });
 
-export async function handleCreateNote(data: z.infer<typeof noteSchema>) {
+export async function handleCreateCourse(data: z.infer<typeof courseSchema>) {
   try {
-    const validation = noteSchema.safeParse(data);
+    const validation = courseSchema.safeParse(data);
     if (!validation.success) {
       return { success: false, error: "Invalid data." };
     }
@@ -33,19 +34,19 @@ export async function handleCreateNote(data: z.infer<typeof noteSchema>) {
     const db = client.db(process.env.DB_NAME);
     const collection = db.collection(process.env.COLLECTION_NAME!);
 
-    const newNote = {
+    const newCourse = {
       ...validation.data,
       status: "Draft",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    await collection.insertOne(newNote);
+    await collection.insertOne(newCourse);
 
     revalidatePath("/dashboard/content");
-    return { success: true, message: "Note created successfully." };
+    return { success: true, message: "Course created successfully." };
   } catch (error) {
-    console.error("Error creating note:", error);
-    return { success: false, error: "An unexpected error occurred while creating the note." };
+    console.error("Error creating course:", error);
+    return { success: false, error: "An unexpected error occurred while creating the course." };
   }
 }

@@ -1,77 +1,104 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Users, Activity, BookCheck, Clock } from 'lucide-react';
 
-const enrollmentData = [
-  { month: "Jan", newStudents: 186 },
-  { month: "Feb", newStudents: 305 },
-  { month: "Mar", newStudents: 237 },
-  { month: "Apr", newStudents: 273 },
-  { month: "May", newStudents: 209 },
-  { month: "Jun", newStudents: 250 },
+
+const userGrowthData = [
+  { month: "Jan", newUsers: 186 },
+  { month: "Feb", newUsers: 305 },
+  { month: "Mar", newUsers: 237 },
+  { month: "Apr", newUsers: 273 },
+  { month: "May", newUsers: 209 },
+  { month: "Jun", newUsers: 250 },
 ];
 
-const performanceData = [
-    { course: "Algebra", completion: 85 },
-    { course: "History", completion: 72 },
-    { course: "Physics", completion: 65 },
-    { course: "Literature", completion: 91 },
-    { course: "Python", completion: 78 },
+const courseEnrollmentData = [
+    { name: "Algebra II", value: 400, fill: "hsl(var(--chart-1))" },
+    { name: "World History", value: 300, fill: "hsl(var(--chart-2))"  },
+    { name: "AP Physics", value: 300, fill: "hsl(var(--chart-3))"  },
+    { name: "English Lit", value: 200, fill: "hsl(var(--chart-4))"  },
 ];
+
+
+const reportMetrics = [
+    { title: "Weekly Active Users", value: "890", icon: Activity, change: "+120 from last week" },
+    { title: "Total Users (30 days)", value: "1,250", icon: Users, change: "+15.2% from last month" },
+    { title: "Published Courses", value: "48", icon: BookCheck, change: "+5 from last month" },
+    { title: "Avg. Session Duration", value: "24m", icon: Clock, change: "-2m from last month" },
+]
 
 export default function ReportsPage() {
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-4xl font-bold font-headline tracking-tight">Reports</h1>
-      <Tabs defaultValue="enrollment">
-        <TabsList>
-          <TabsTrigger value="enrollment">Student Enrollment</TabsTrigger>
-          <TabsTrigger value="performance">Course Performance</TabsTrigger>
-        </TabsList>
-        <TabsContent value="enrollment" className="mt-6">
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle>New Student Enrollment (Last 6 Months)</CardTitle>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {reportMetrics.map((metric) => (
+          <Card key={metric.title} className="shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+              <metric.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <ChartContainer config={{}} className="h-[400px] w-full">
+              <div className="text-2xl font-bold">{metric.value}</div>
+              <p className="text-xs text-muted-foreground">{metric.change}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <Card className="lg:col-span-3 shadow-md">
+            <CardHeader>
+                <CardTitle>User Growth (Last 6 Months)</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={{}} className="h-[350px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={enrollmentData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                    <BarChart data={userGrowthData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="month" tickLine={false} axisLine={false} />
                         <YAxis tickLine={false} axisLine={false} />
                         <ChartTooltip content={<ChartTooltipContent />} />
-                        <Bar dataKey="newStudents" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="newUsers" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
-              </ChartContainer>
+                </ChartContainer>
             </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="performance" className="mt-6">
-           <Card className="shadow-md">
+        </Card>
+
+        <Card className="lg:col-span-2 shadow-md">
             <CardHeader>
-              <CardTitle>Course Completion Rate</CardTitle>
+                <CardTitle>Course Enrollment Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={{}} className="h-[400px] w-full">
+                <ChartContainer config={{}} className="h-[350px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                     <BarChart data={performanceData} layout="vertical" margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                        <YAxis dataKey="course" type="category" tickLine={false} axisLine={false} width={100}/>
-                        <XAxis type="number" tickLine={false} axisLine={false} />
-                        <ChartTooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
-                        <Bar dataKey="completion" name="Completion Rate" unit="%" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
-                    </BarChart>
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
+                        <Pie
+                            data={courseEnrollmentData}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={120}
+                            labelLine={false}
+                        >
+                            {courseEnrollmentData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                        </Pie>
+                         <Legend />
+                    </PieChart>
                 </ResponsiveContainer>
-              </ChartContainer>
+                </ChartContainer>
             </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </Card>
+      </div>
     </div>
   );
 }

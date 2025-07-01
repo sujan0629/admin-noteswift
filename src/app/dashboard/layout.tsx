@@ -1,4 +1,4 @@
-import { GraduationCap } from "lucide-react";
+import { BookMarked } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -23,9 +23,9 @@ export default function DashboardLayout({
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-8 w-8 text-primary" />
+              <BookMarked className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold font-headline text-primary">
-                EduAdmin Pro
+                NoteSwift
               </h1>
             </div>
           </SidebarHeader>
@@ -39,8 +39,8 @@ export default function DashboardLayout({
                 <AvatarFallback>A</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="font-semibold text-sm">Admin User</span>
-                <span className="text-xs text-muted-foreground">admin@edupro.com</span>
+                <span className="font-semibold text-sm">NoteSwift Admin</span>
+                <span className="text-xs text-muted-foreground">admin@noteswift.com</span>
               </div>
             </div>
           </SidebarFooter>

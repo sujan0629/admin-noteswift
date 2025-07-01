@@ -1,11 +1,11 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Users, BookOpenCheck, FileVideo, UserCheck } from "lucide-react";
+import { UsersRound, NotebookPen, StickyNote, UserCheck } from "lucide-react";
 
 const metrics = [
-  { title: "Total Students", value: "1,250", icon: Users, change: "+15.2% from last month" },
-  { title: "Active Courses", value: "48", icon: BookOpenCheck, change: "+5 from last month" },
-  { title: "Total Lessons", value: "520", icon: FileVideo, change: "+50 from last month" },
-  { title: "Enrollments", value: "3,402", icon: UserCheck, change: "+20.1% from last month" },
+  { title: "Total Users", value: "1,250", icon: UsersRound, change: "+15.2% from last month" },
+  { title: "Courses Published", value: "48", icon: NotebookPen, change: "+5 from last month" },
+  { title: "Notes Added", value: "520", icon: StickyNote, change: "+50 from last month" },
+  { title: "Active Users (24h)", value: "350", icon: UserCheck, change: "+20.1% from last month" },
 ];
 
 export default function DashboardPage() {
@@ -29,18 +29,18 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 shadow-md">
           <CardHeader>
-            <CardTitle className="font-headline">Recent Activity</CardTitle>
+            <CardTitle className="font-headline">Recent User Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">Activity feed will be displayed here.</p>
+            <p className="text-muted-foreground">A feed of recent user sign-ups and content uploads will be displayed here.</p>
           </CardContent>
         </Card>
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="font-headline">Course Completion</CardTitle>
+            <CardTitle className="font-headline">Course Engagement</CardTitle>
           </CardHeader>
           <CardContent>
-             <p className="text-muted-foreground">Course completion chart will be displayed here.</p>
+             <p className="text-muted-foreground">A chart showing popular courses will be displayed here.</p>
           </CardContent>
         </Card>
       </div>

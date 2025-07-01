@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'EduAdmin Pro',
-  description: 'Admin dashboard for managing educational content.',
+  title: 'NoteSwift Admin',
+  description: 'Admin dashboard for the NoteSwift platform.',
 };
 
 export default function RootLayout({

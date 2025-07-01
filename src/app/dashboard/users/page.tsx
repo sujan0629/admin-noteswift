@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const users = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Admin", lastLogin: "2 hours ago", avatar: "person woman" },
@@ -32,11 +32,11 @@ export default function UsersPage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold font-headline tracking-tight">User Management</h1>
-        <Button>Add New User</Button>
       </div>
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle>All Users</CardTitle>
+          <CardDescription>Users will appear here automatically when they sign up or log in.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
